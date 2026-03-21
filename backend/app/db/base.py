@@ -1,4 +1,3 @@
-from pydantic import BaseModel
+from sqlalchemy.orm import declarative_base
 
-class Base(BaseModel):
-    pass
+Base = declarative_base()

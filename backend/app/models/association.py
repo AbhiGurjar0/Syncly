@@ -1,7 +1,5 @@
 from sqlalchemy import Column, String, Integer, Text, DateTime, Enum, ForeignKey, Table
 from app.db.base import Base
-
-
 room_members = Table(
     "room_members", Base.metadata,
     Column("user_id",    Integer, ForeignKey("users.id"),    primary_key=True),
