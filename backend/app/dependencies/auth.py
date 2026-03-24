@@ -2,7 +2,7 @@ from app.schemas.user_schema import UserCreate, UserResponse
 from sqlalchemy import select
 from app.models.user import User
 from typing import Annotated
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from app.db.session import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,6 +10,7 @@ from app.core.security import hash_password, verify_password, create_access_toke
 from datetime import timedelta
 from app.core.config import settings
 from app.schemas.user_schema import Token
+from fastapi.responses import JSONResponse
 
 
 async def signup(
@@ -39,8 +40,8 @@ async def signup(
 
 
 async def signin(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-    db: Annotated[AsyncSession, Depends(get_db())],
+    form_data,
+    db: AsyncSession = Depends(get_db),
 ) -> Token:
 
     query = select(User).where(User.email == form_data.email.lower())
@@ -53,9 +54,7 @@ async def signin(
     access_token_expiry_time = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
     return Token(
-        access_token=create_access_token(
-            {"sub": str(user.id)}, access_token_expiry_time
-        ),
+        access_token=create_access_token({"sub": str(user.id)}, access_token_expiry_time),
         success=True,
         message="Logged In Successfully",
     )

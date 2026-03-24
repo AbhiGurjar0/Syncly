@@ -6,7 +6,7 @@ from app.core.config import settings
 # 1. Async engine
 engine = create_async_engine(
     settings.DATABASE_URL,
-    echo=True
+    # echo=True
 )
 
 # 2. Async session

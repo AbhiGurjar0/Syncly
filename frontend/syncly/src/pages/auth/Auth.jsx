@@ -933,8 +933,9 @@ function LoginView({ onNav }) {
 
     let result = await fetch("http://localhost:8000/api/v1/user/login", {
       method: "POST",
+      
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type':'application/json',
       },
       body: JSON.stringify(form_data),
     });
@@ -945,6 +946,8 @@ function LoginView({ onNav }) {
       return;
     }
     if (result?.success) {
+      console.log(result)
+      localStorage.setItem("token", JSON.stringify(result.access_token));
       setLoading(false);
       window.location.href = "/";
       return;
