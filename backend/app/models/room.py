@@ -2,7 +2,7 @@ from sqlalchemy import Column, String, Integer, Text, DateTime, Enum, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.db.base import Base
-from app.models.association import project_members , task_assignees ,meeting_members
+from app.models.association import project_members , task_assignees ,meeting_members, room_members
 
 
 

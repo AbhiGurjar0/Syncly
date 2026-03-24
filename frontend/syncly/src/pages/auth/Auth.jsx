@@ -925,17 +925,26 @@ function LoginView({ onNav }) {
 
   const handleSubmit = async () => {
     setLoading(true);
-    let result = await fetch("http://localhost:8000/api/v1/login", {
+    let form_data = {
+      email: email,
+      password: pw,
+      remember: remember,
+    };
+
+    let result = await fetch("http://localhost:8000/api/v1/user/login", {
       method: "POST",
-      headers: {},
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(form_data),
     });
+
+    result = await result.json();
     if (!result) {
       setLoading(false);
       return;
     }
-    result = await result.json();
-    if (result.ok) {
+    if (result?.success) {
       setLoading(false);
       window.location.href = "/";
       return;
@@ -1017,37 +1026,39 @@ function SignupView({ onNav }) {
     if (!agreed) return alert("Please select the checkbox");
 
     setLoading(true);
-    console.log("Enters")
+    console.log("Enters");
 
     try {
-      const response = await fetch("http://localhost:8000/api/v1/user/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "http://localhost:8000/api/v1/user/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            agreed,
+            password: pw,
+          }),
         },
-        body: JSON.stringify({
-          name,
-          email,
-          agreed,
-          password:pw
-        }),
-      });
-      console.log("Enterd")
+      );
+      console.log("Enterd");
 
       const result = await response.json();
 
       if (response.ok) {
-        console.log("DOne")
+        console.log("DOne");
         window.location.href = "/login";
       } else {
-        
         alert(result.message || "Error in account creation");
       }
     } catch (error) {
       console.error(error);
       alert("Something went wrong");
     }
-    console.log("Nothing Happendd")
+    console.log("Nothing Happendd");
 
     setLoading(false);
   };

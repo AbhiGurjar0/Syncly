@@ -6,8 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.schemas.work_space import Project
 # from app.models.project import Project
-from app.dependencies.auth import signup
-from app.schemas.user_schema import UserCreate
+from app.dependencies.auth import signup, signin
+from app.schemas.user_schema import UserCreate, UserLogin
 
 router = APIRouter()
 
@@ -15,6 +15,12 @@ router = APIRouter()
 @router.post('/register')
 async def register(user_in: UserCreate, db: AsyncSession = Depends(get_db)):
     return await signup(user_in, db)
+
+
+@router.post('/login')
+async def login(user_in: UserLogin, db: AsyncSession = Depends(get_db)):
+    return await signin(user_in, db)
+
 
 # @router.post("/create_project")
 # async def create_workspace(

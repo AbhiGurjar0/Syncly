@@ -2,22 +2,27 @@
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+import hashlib
 
 from app.core.config import settings
 
 # Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
 
 # PASSWORD FUNCTIONS
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    hashed = hashlib.sha256(password.encode()).hexdigest()
+    return pwd_context.hash(hashed)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    hashed = hashlib.sha256(plain_password.encode()).hexdigest()
+    return pwd_context.verify(hashed, hashed_password)
+
 
 # JWT TOKEN FUNCTIONS
+
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
@@ -29,9 +34,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode.update({"exp": expire})
 
     encoded_jwt = jwt.encode(
-        to_encode,
-        settings.secret_key,
-        algorithm=settings.algorithm
+        to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
     )
 
     return encoded_jwt
@@ -40,9 +43,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 def decode_token(token: str):
     try:
         payload = jwt.decode(
-            token,
-            settings.secret_key,
-            algorithms=[settings.algorithm]
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )
         return payload
     except JWTError:

@@ -34,7 +34,7 @@ class User(Base):
     # ── Relationships ──
     # Projects this user owns
     owned_projects = relationship(
-        "Project", back_populates="owner", foreign_keys="[Project.owner_id]"
+        "Project", back_populates="owner", foreign_keys="Project.owner_id"
     )
     # Projects this user is a member of
     projects = relationship(

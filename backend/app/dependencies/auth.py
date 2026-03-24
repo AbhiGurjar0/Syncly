@@ -39,8 +39,8 @@ async def signup(
 
 
 async def signin(
-    db: Annotated[AsyncSession, get_db()],
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    db: Annotated[AsyncSession, Depends(get_db())],
 ) -> Token:
 
     query = select(User).where(User.email == form_data.email.lower())
@@ -53,7 +53,9 @@ async def signin(
     access_token_expiry_time = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
     return Token(
-        access_token=create_access_token(user.id, access_token_expiry_time),
-        status="success",
+        access_token=create_access_token(
+            {"sub": str(user.id)}, access_token_expiry_time
+        ),
+        success=True,
         message="Logged In Successfully",
     )

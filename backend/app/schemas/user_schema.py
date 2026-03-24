@@ -5,6 +5,11 @@ class UserCreate(BaseModel):
     email:str
     password:str
     agreed:bool
+
+class UserLogin(BaseModel):
+    email:str
+    password:str
+    remember:bool
     
 class UserResponse(BaseModel):
     id:int
@@ -19,5 +24,5 @@ class Token(BaseModel):
     access_token:str
     token_type: str = "bearer"
     message:str
-    success:str
+    success:bool
     
