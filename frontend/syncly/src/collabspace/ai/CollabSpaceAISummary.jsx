@@ -19,6 +19,25 @@ function Panel({ children }) {
 export default function CollabSpaceAISummary({ project }) {
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  async function copyText(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1000);
+    } catch {
+      // Basic fallback for environments without `navigator.clipboard`.
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1000);
+    }
+  }
 
   async function onGenerate() {
     setLoading(true);
@@ -33,22 +52,42 @@ export default function CollabSpaceAISummary({ project }) {
     <Panel>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
         <div style={{ fontSize: 14, fontWeight: 900 }}>Summary</div>
-        <button
-          type="button"
-          onClick={onGenerate}
-          disabled={loading}
-          style={{
-            padding: "8px 10px",
-            borderRadius: 10,
-            cursor: loading ? "not-allowed" : "pointer",
-            border: "1px solid rgba(255,255,255,0.12)",
-            background: "rgba(127,111,255,0.18)",
-            color: "white",
-            fontWeight: 700,
-          }}
-        >
-          {loading ? "Generating..." : "Generate summary"}
-        </button>
+        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          <button
+            type="button"
+            onClick={onGenerate}
+            disabled={loading}
+            style={{
+              padding: "8px 10px",
+              borderRadius: 10,
+              cursor: loading ? "not-allowed" : "pointer",
+              border: "1px solid rgba(255,255,255,0.12)",
+              background: "rgba(127,111,255,0.18)",
+              color: "white",
+              fontWeight: 700,
+              whiteSpace: "nowrap",
+            }}
+          >
+            {loading ? "Generating..." : "Generate summary"}
+          </button>
+          <button
+            type="button"
+            onClick={() => copyText(summary)}
+            disabled={!summary || loading}
+            style={{
+              padding: "8px 10px",
+              borderRadius: 10,
+              cursor: !summary || loading ? "not-allowed" : "pointer",
+              border: "1px solid rgba(255,255,255,0.12)",
+              background: "transparent",
+              color: "white",
+              fontWeight: 700,
+              whiteSpace: "nowrap",
+            }}
+          >
+            {copied ? "Copied!" : "Copy"}
+          </button>
+        </div>
       </div>
 
       {summary ? (

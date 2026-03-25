@@ -53,6 +53,7 @@ export default function CollabSpaceAIChat({ project }) {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const canSend = useMemo(() => input.trim().length > 0 && !loading, [input, loading]);
 
@@ -78,6 +79,27 @@ export default function CollabSpaceAIChat({ project }) {
     setLoading(false);
   }
 
+  async function copyTranscript() {
+    const transcript = messages
+      .map((m) => `${m.role.toUpperCase()}: ${m.content}`)
+      .join("\n\n");
+
+    try {
+      await navigator.clipboard.writeText(transcript);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1000);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = transcript;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1000);
+    }
+  }
+
   function onClear() {
     setMessages([
       {
@@ -92,22 +114,42 @@ export default function CollabSpaceAIChat({ project }) {
     <Panel>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
         <div style={{ fontSize: 14, fontWeight: 900 }}>Chat</div>
-        <button
-          type="button"
-          onClick={onClear}
-          disabled={loading}
-          style={{
-            padding: "8px 10px",
-            borderRadius: 10,
-            cursor: loading ? "not-allowed" : "pointer",
-            border: "1px solid rgba(255,255,255,0.12)",
-            background: "transparent",
-            color: "white",
-            fontWeight: 700,
-          }}
-        >
-          Clear
-        </button>
+        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          <button
+            type="button"
+            onClick={copyTranscript}
+            disabled={loading}
+            style={{
+              padding: "8px 10px",
+              borderRadius: 10,
+              cursor: loading ? "not-allowed" : "pointer",
+              border: "1px solid rgba(255,255,255,0.12)",
+              background: "transparent",
+              color: "white",
+              fontWeight: 700,
+              whiteSpace: "nowrap",
+            }}
+          >
+            {copied ? "Copied!" : "Copy"}
+          </button>
+          <button
+            type="button"
+            onClick={onClear}
+            disabled={loading}
+            style={{
+              padding: "8px 10px",
+              borderRadius: 10,
+              cursor: loading ? "not-allowed" : "pointer",
+              border: "1px solid rgba(255,255,255,0.12)",
+              background: "transparent",
+              color: "white",
+              fontWeight: 700,
+              whiteSpace: "nowrap",
+            }}
+          >
+            Clear
+          </button>
+        </div>
       </div>
 
       <div
