@@ -1,16 +1,41 @@
-# React + Vite
+# CollabSpace Frontend (Hackathon build)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This folder contains the React/Vite frontend for **CollabSpace AI**.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+From this directory:
 
-## React Compiler
+```bash
+npm install
+npm run dev
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Then open the dev server URL printed in your terminal.
 
-## Expanding the ESLint configuration
+## Route: `/collabspace` (frontend-first prototype)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+This repo currently has a dedicated frontend slice for the CollabSpace experience under the `/collabspace` prefix.
+
+- `GET /collabspace/login`
+  - Mock sign-in/up UI (no backend calls yet).
+  - On submit, it stores a mock token in `localStorage` under the key `token`.
+
+- `GET /collabspace`
+  - Auth-gated dashboard.
+  - Shows a list of “projects/workspaces”.
+  - Supports creating new projects.
+  - Projects are stored in `localStorage` under `collabspace_projects_v1`.
+
+- `GET /collabspace/project/:id`
+  - Project details page.
+  - Shows title/description.
+  - Includes a placeholder message for “CollabSpace AI” (AI UI comes later).
+
+## Code locations
+
+- Routing is wired in: `src/App.jsx`
+- CollabSpace slice components:
+  - `src/collabspace/auth/*`
+  - `src/collabspace/pages/*`
+  - `src/collabspace/storage.js`
