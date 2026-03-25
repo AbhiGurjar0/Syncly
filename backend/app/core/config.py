@@ -6,7 +6,7 @@ from pydantic import Field
 
 class Settings(BaseSettings):
     # APP INFO
-    PROJECT_NAME: str = "Syncly Backend"
+    PROJECT_NAME: str = "CollabSpace Backend"
     API_V1_PREFIX: str = "/api/v1"
 
     # SECURITY
