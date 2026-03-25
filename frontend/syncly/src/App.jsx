@@ -13,6 +13,10 @@ import { ThemeProvider } from "./context/ThemeContext";
 import Dashboard from "./pages/workSpace/WorkSpace";
 import ProjectDetail from "./pages/project/ProjectDetail";
 import Auth from "./pages/auth/auth";
+import RequireAuth from "./collabspace/auth/RequireAuth";
+import CollabSpaceAuth from "./collabspace/auth/CollabSpaceAuth";
+import CollabSpaceDashboard from "./collabspace/pages/CollabSpaceDashboard";
+import CollabSpaceProjectDetails from "./collabspace/pages/CollabSpaceProjectDetails";
 
 function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -27,6 +31,23 @@ function App() {
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/project/:id" element={<ProjectDetail />} />
                 <Route path="/login" element={<Auth />} />
+                <Route path="/collabspace/login" element={<CollabSpaceAuth />} />
+                <Route
+                  path="/collabspace"
+                  element={
+                    <RequireAuth>
+                      <CollabSpaceDashboard />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/collabspace/project/:id"
+                  element={
+                    <RequireAuth>
+                      <CollabSpaceProjectDetails />
+                    </RequireAuth>
+                  }
+                />
               </Routes>
             </main>
           </div>
