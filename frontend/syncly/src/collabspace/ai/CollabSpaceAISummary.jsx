@@ -1,20 +1,6 @@
 import React, { useState } from "react";
 import { generateProjectSummary } from "./mockAi";
-
-function Panel({ children }) {
-  return (
-    <div
-      style={{
-        background: "rgba(255,255,255,0.04)",
-        border: "1px solid rgba(255,255,255,0.10)",
-        borderRadius: 16,
-        padding: 16,
-      }}
-    >
-      {children}
-    </div>
-  );
-}
+import Panel from "../ui/Panel";
 
 export default function CollabSpaceAISummary({ project }) {
   const [loading, setLoading] = useState(false);
