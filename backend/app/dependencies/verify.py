@@ -8,14 +8,13 @@ from app.db.session import get_db
 from app.models.user import User
 from app.core.security import decode_token
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/user/login")
 
 
 async def get_current_user(
     token: Annotated[str, Depends(oauth2_scheme)],
     db: AsyncSession = Depends(get_db),
 ):
-    print("Token isn",token)
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -30,7 +29,6 @@ async def get_current_user(
     if payload is None:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-    print("user id ",payload)
     user_id = payload.get("sub")
     if not user_id:
         raise credentials_exception
@@ -51,8 +49,6 @@ async def get_current_user(
 async def get_current_active_user(
     user: User = Depends(get_current_user),  # ✅ FIXED
 ) -> User:
-    print("user ids:", user)
-
     if not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
 
