@@ -1,41 +1,59 @@
-# CollabSpace Frontend (Hackathon build)
+# CollabSpace Frontend
 
-This folder contains the React/Vite frontend for **CollabSpace AI**.
+This app is the frontend for the running CollabSpace AI website.
 
-## Run locally
+## Purpose
 
-From this directory:
+The frontend provides:
+- authentication flow for CollabSpace users
+- project dashboard and project details views
+- AI summary and AI chat interfaces connected through the frontend API layer
 
-```bash
-npm install
-npm run dev
-```
+## Local run
 
-Then open the dev server URL printed in your terminal.
+1. Open this folder: `frontend/syncly`
+2. Install dependencies with `npm install`
+3. Start the app with `npm run dev`
+4. Open the local URL printed by Vite
 
-## Route: `/collabspace` (frontend-first prototype)
+## Core routes
 
-This repo currently has a dedicated frontend slice for the CollabSpace experience under the `/collabspace` prefix.
+- `/collabspace/login`
+  - User sign-in and sign-up entrypoint.
+- `/collabspace`
+  - Main dashboard with project list and project creation.
+- `/collabspace/project/:id`
+  - Project details with AI tabs (Summary and Chat).
 
-- `GET /collabspace/login`
-  - Mock sign-in/up UI (no backend calls yet).
-  - On submit, it stores a mock token in `localStorage` under the key `token`.
+## Frontend architecture
 
-- `GET /collabspace`
-  - Auth-gated dashboard.
-  - Shows a list of “projects/workspaces”.
-  - Supports creating new projects.
-  - Projects are stored in `localStorage` under `collabspace_projects_v1`.
+- `src/App.jsx`
+  - Main route registration and route mounting.
+- `src/collabspace/api.js`
+  - Single integration layer for backend requests.
+  - Keep all network calls here when adding features.
+- `src/collabspace/auth/`
+  - Auth pages and route guards.
+- `src/collabspace/pages/`
+  - Page-level containers and layout logic.
+- `src/collabspace/ai/`
+  - AI-specific UI modules and state handling.
+- `src/collabspace/ui/`
+  - Shared UI building blocks for consistent styling.
 
-- `GET /collabspace/project/:id`
-  - Project details page.
-  - Shows title/description.
-  - Includes a placeholder message for “CollabSpace AI” (AI UI comes later).
+## How to add new frontend features
 
-## Code locations
+1. Define the user-facing behavior first.
+2. Add or update page-level state in `src/collabspace/pages/`.
+3. Add reusable UI in `src/collabspace/ui/` if duplication appears.
+4. Add API methods in `src/collabspace/api.js` for backend communication.
+5. Keep auth-protected screens behind existing route guard usage.
+6. Verify route navigation and error states before merging.
 
-- Routing is wired in: `src/App.jsx`
-- CollabSpace slice components:
-  - `src/collabspace/auth/*`
-  - `src/collabspace/pages/*`
-  - `src/collabspace/storage.js`
+## Standards for ongoing work
+
+- Keep components small and focused.
+- Keep data fetching out of presentation-only components.
+- Reuse existing style patterns for consistency.
+- Prefer clear names and simple logic over advanced abstractions.
+- Add changes in a way teammates can read quickly and extend safely.
