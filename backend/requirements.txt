@@ -1,1 +1,10 @@
 argon2_cffi
+fastapi
+uvicorn
+sqlalchemy
+aiosqlite
+pydantic
+pydantic-settings
+python-jose
+passlib
+google-generativeai
