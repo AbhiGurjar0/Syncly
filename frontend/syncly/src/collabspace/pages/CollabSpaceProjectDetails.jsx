@@ -1,18 +1,36 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { loadProjects } from "../storage";
 import CollabSpaceAISummary from "../ai/CollabSpaceAISummary";
 import CollabSpaceAIChat from "../ai/CollabSpaceAIChat";
+import { getProject } from "../api";
 
 export default function CollabSpaceProjectDetails() {
   const { id } = useParams();
 
-  const [projects] = useState(() => loadProjects());
+  const [projects, setProjects] = useState(() => loadProjects());
   const [activeAiTab, setActiveAiTab] = useState("summary"); // summary | chat
+  const [note, setNote] = useState("");
   const project = useMemo(() => {
     const numericId = parseInt(id, 10);
     return projects.find((p) => p.id === numericId || String(p.id) === String(id)) || null;
   }, [id, projects]);
+
+  // Best-effort refresh from backend. If backend isn't available, local fallback remains.
+  useEffect(() => {
+    const run = async () => {
+      try {
+        const fresh = await getProject(id);
+        setProjects((prev) => {
+          const next = prev.filter((p) => String(p.id) !== String(id));
+          return [fresh, ...next];
+        });
+      } catch {
+        setNote("Using local project data (backend not reachable).");
+      }
+    };
+    run();
+  }, [id]);
 
   if (!project) {
     return (
@@ -39,6 +57,11 @@ export default function CollabSpaceProjectDetails() {
         <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)", borderRadius: 16, padding: 16 }}>
           <div style={{ fontSize: 24, fontWeight: 900, marginBottom: 6 }}>{project.title}</div>
           <div style={{ fontSize: 13, color: "#b0b0d0", lineHeight: 1.6, marginBottom: 18 }}>{project.description}</div>
+          {note ? (
+            <div style={{ fontSize: 12, color: "#b0b0d0", marginBottom: 10 }}>
+              {note}
+            </div>
+          ) : null}
 
           <div style={{ height: 1, background: "rgba(255,255,255,0.10)", marginBottom: 14 }} />
 

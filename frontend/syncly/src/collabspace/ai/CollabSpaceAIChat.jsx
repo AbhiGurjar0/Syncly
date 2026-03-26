@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { generateChatReply } from "./mockAi";
 import Panel from "../ui/Panel";
+import { aiChat } from "../api";
 
 function ChatMessage({ role, content }) {
   const isUser = role === "user";
@@ -40,6 +41,7 @@ export default function CollabSpaceAIChat({ project }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [error, setError] = useState("");
 
   const canSend = useMemo(() => input.trim().length > 0 && !loading, [input, loading]);
 
@@ -48,6 +50,7 @@ export default function CollabSpaceAIChat({ project }) {
 
     const userMessage = input.trim();
     setInput("");
+    setError("");
     setMessages((prev) => [
       ...prev,
       { role: "user", content: userMessage },
@@ -57,11 +60,23 @@ export default function CollabSpaceAIChat({ project }) {
     // Simulate API latency for a more realistic UX.
     await new Promise((r) => setTimeout(r, 550));
 
-    setMessages((prev) => {
-      const history = prev;
-      const reply = generateChatReply({ project, message: userMessage, history });
-      return [...prev, { role: "assistant", content: reply }];
-    });
+    // Prefer backend Gemini; fall back to mock AI if backend isn't ready.
+    try {
+      const nextMessages = [...messages, { role: "user", content: userMessage }];
+      const res = await aiChat({
+        title: project?.title || "",
+        description: project?.description || "",
+        messages: nextMessages,
+      });
+      setMessages((prev) => [...prev, { role: "assistant", content: res?.text || "" }]);
+    } catch {
+      setError("Gemini backend not reachable — using mock AI.");
+      setMessages((prev) => {
+        const history = prev;
+        const reply = generateChatReply({ project, message: userMessage, history });
+        return [...prev, { role: "assistant", content: reply }];
+      });
+    }
     setLoading(false);
   }
 
@@ -149,6 +164,9 @@ export default function CollabSpaceAIChat({ project }) {
           marginBottom: 14,
         }}
       >
+        {error ? (
+          <div style={{ color: "#b0b0d0", fontSize: 12 }}>{error}</div>
+        ) : null}
         {messages.map((m, idx) => (
           <ChatMessage key={idx} role={m.role} content={m.content} />
         ))}

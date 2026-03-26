@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { generateProjectSummary } from "./mockAi";
 import Panel from "../ui/Panel";
+import { aiSummary } from "../api";
 
 export default function CollabSpaceAISummary({ project }) {
   const [loading, setLoading] = useState(false);
@@ -29,7 +30,16 @@ export default function CollabSpaceAISummary({ project }) {
     setLoading(true);
     // Simulate “thinking” so it feels real.
     await new Promise((r) => setTimeout(r, 500));
-    const next = generateProjectSummary(project);
+    let next = "";
+    try {
+      const res = await aiSummary({
+        title: project?.title || "",
+        description: project?.description || "",
+      });
+      next = res?.text || "";
+    } catch {
+      next = generateProjectSummary(project);
+    }
     setSummary(next);
     setLoading(false);
   }

@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { login, register } from "../api";
 
 function Field({ label, value, onChange, type = "text" }) {
   return (
@@ -33,6 +34,7 @@ export default function CollabSpaceAuth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const canSubmit = useMemo(() => {
     if (!email.trim() || !password.trim()) return false;
     if (mode === "signup" && !name.trim()) return false;
@@ -44,12 +46,22 @@ export default function CollabSpaceAuth() {
     if (!canSubmit) return;
 
     setLoading(true);
-    // Mock auth: no backend calls yet.
-    await new Promise((r) => setTimeout(r, 400));
+    setError("");
 
-    localStorage.setItem("token", JSON.stringify(`mock_token_${Date.now()}`));
-    setLoading(false);
-    navigate("/collabspace");
+    try {
+      if (mode === "signup") {
+        await register({ name, email, password });
+      }
+
+      const result = await login({ email, password });
+      // Backend returns: { access_token, success, message, token_type }
+      localStorage.setItem("token", result.access_token);
+      navigate("/collabspace");
+    } catch (err) {
+      setError(err?.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -77,6 +89,22 @@ export default function CollabSpaceAuth() {
         <p style={{ fontSize: 13, color: "#b0b0d0", marginBottom: 18 }}>
           Sign in to manage your collaboration projects.
         </p>
+        {error ? (
+          <div
+            style={{
+              marginBottom: 12,
+              padding: "10px 12px",
+              borderRadius: 12,
+              border: "1px solid rgba(255,120,120,0.35)",
+              background: "rgba(255,120,120,0.10)",
+              color: "white",
+              fontSize: 13,
+              lineHeight: 1.4,
+            }}
+          >
+            {error}
+          </div>
+        ) : null}
 
         <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
           <button
