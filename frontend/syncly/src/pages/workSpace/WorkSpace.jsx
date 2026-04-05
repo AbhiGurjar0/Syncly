@@ -1851,9 +1851,14 @@ export default function WorkSpace() {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      let res = await fetch("http://localhost:8000/api/v1/project/projects");
-      let data = await res.json();
-      setProjects(data);
+      try {
+        let res = await fetch("http://localhost:8000/api/v1/project/projects");
+        let data = await res.json();
+        setProjects(data);
+      } catch {
+        // Backend isn't required for CollabSpace; keep old dashboard usable offline.
+        setProjects(INITIAL_PROJECTS);
+      }
     };
 
     fetchProjects();

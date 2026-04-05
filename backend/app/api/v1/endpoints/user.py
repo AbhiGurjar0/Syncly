@@ -29,10 +29,6 @@ async def create_project(
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_active_user)],
 ) -> ProjectResponse:
-
-    print("USER:", current_user)
-    print("USER ID:", getattr(current_user, "id", None))
-
     project = ProjectModel(
         title=form_data.title,
         description=form_data.description,

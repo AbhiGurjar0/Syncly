@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getNextProjectId, loadProjects, saveProjects } from "../storage";
+import { createProject, listProjects } from "../api";
 
 function Button({ children, onClick, disabled }) {
   return (
@@ -29,10 +30,20 @@ export default function CollabSpaceDashboard() {
   const [projects, setProjects] = useState(() => loadProjects());
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    // Keep state in sync if user refreshed on an older version.
-    setProjects(loadProjects());
+    // Prefer backend projects; fall back to localStorage if backend isn't ready.
+    const boot = async () => {
+      try {
+        const data = await listProjects();
+        const next = Array.isArray(data?.projects) ? data.projects : [];
+        setProjects(next);
+      } catch {
+        setProjects(loadProjects());
+      }
+    };
+    boot();
   }, []);
 
   const canCreate = useMemo(() => {
@@ -41,13 +52,29 @@ export default function CollabSpaceDashboard() {
 
   function onCreate() {
     if (!canCreate) return;
-    const next = getNextProjectId(projects);
-    const nextProject = { id: next, title: title.trim(), description: description.trim() };
-    const updated = [nextProject, ...projects];
-    setProjects(updated);
-    saveProjects(updated);
-    setTitle("");
-    setDescription("");
+    const run = async () => {
+      setError("");
+      const nextTitle = title.trim();
+      const nextDesc = description.trim();
+
+      try {
+        const created = await createProject({ title: nextTitle, description: nextDesc });
+        setProjects((prev) => [created, ...prev]);
+      } catch {
+        // Offline/dev fallback: keep local behavior.
+        const nextId = getNextProjectId(projects);
+        const nextProject = { id: nextId, title: nextTitle, description: nextDesc };
+        const updated = [nextProject, ...projects];
+        setProjects(updated);
+        saveProjects(updated);
+        setError("Backend not reachable — saved locally for now.");
+      } finally {
+        setTitle("");
+        setDescription("");
+      }
+    };
+
+    run();
   }
 
   function onSignOut() {
@@ -82,6 +109,11 @@ export default function CollabSpaceDashboard() {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 16 }}>
           <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)", borderRadius: 16, padding: 16 }}>
             <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 10 }}>Projects</div>
+            {error ? (
+              <div style={{ fontSize: 12, color: "#b0b0d0", marginBottom: 10 }}>
+                {error}
+              </div>
+            ) : null}
             {projects.length === 0 ? (
               <div style={{ color: "#b0b0d0" }}>No projects yet.</div>
             ) : (

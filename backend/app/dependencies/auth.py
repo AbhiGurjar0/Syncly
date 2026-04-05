@@ -49,7 +49,7 @@ async def signin(
     user = result.scalar_one_or_none()
 
     if not user or not verify_password(form_data.password, user.password):
-        raise HTTPException(status_code=404, detail="user not found")
+        raise HTTPException(status_code=401, detail="Invalid email or password")
 
     access_token_expiry_time = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 

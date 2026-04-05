@@ -9,3 +9,13 @@ python-dotenv
 sqlalchemy
 sqlalchemy[asyncio]
 uvicorn     
+fastapi
+uvicorn
+sqlalchemy
+aiosqlite
+pydantic
+pydantic-settings
+python-jose
+passlib
+google-generativeai
+anyio
