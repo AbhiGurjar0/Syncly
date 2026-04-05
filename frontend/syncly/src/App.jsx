@@ -17,6 +17,7 @@ import RequireAuth from "./collabspace/auth/RequireAuth";
 import CollabSpaceAuth from "./collabspace/auth/CollabSpaceAuth";
 import CollabSpaceDashboard from "./collabspace/pages/CollabSpaceDashboard";
 import CollabSpaceProjectDetails from "./collabspace/pages/CollabSpaceProjectDetails";
+import OrbitDashboard from "./components/Dashboard";
 
 function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -28,7 +29,7 @@ function App() {
           <div className="flex-1 flex flex-col overflow-hidden">
             <main className="flex-1 overflow-y-auto">
               <Routes>
-                <Route path="/" element={<Dashboard />} />
+                <Route path="/" element={<OrbitDashboard />} />
                 <Route path="/project/:id" element={<ProjectDetail />} />
                 <Route path="/login" element={<Auth />} />
                 <Route path="/collabspace/login" element={<CollabSpaceAuth />} />

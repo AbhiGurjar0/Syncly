@@ -1,1 +1,11 @@
 argon2_cffi
+asyncpg
+bcrypt
+fastapi
+httpx
+passlib
+psycopg2-binary
+python-dotenv
+sqlalchemy
+sqlalchemy[asyncio]
+uvicorn     
