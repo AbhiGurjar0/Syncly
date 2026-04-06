@@ -1,16 +1,13 @@
 // App.jsx - Main Application
-import React, { useState } from "react";
+import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Link,
-  useLocation,
+  Navigate,
 } from "react-router-dom";
-import Sidebar from "./components/Sidebar";
-import Navbar from "./components/NavBar";
 import { ThemeProvider } from "./context/ThemeContext";
-import Dashboard from "./pages/workSpace/WorkSpace";
+import WorkSpace from "./pages/workSpace/WorkSpace";
 import ProjectDetail from "./pages/project/ProjectDetail";
 import Auth from "./pages/auth/auth";
 import RequireAuth from "./collabspace/auth/RequireAuth";
@@ -20,8 +17,6 @@ import CollabSpaceProjectDetails from "./collabspace/pages/CollabSpaceProjectDet
 import OrbitDashboard from "./components/Dashboard";
 
 function App() {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-
   return (
     <ThemeProvider>
       <Router>
@@ -29,7 +24,9 @@ function App() {
           <div className="flex-1 flex flex-col overflow-hidden">
             <main className="flex-1 overflow-y-auto">
               <Routes>
-                <Route path="/" element={<OrbitDashboard />} />
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                <Route path="/dashboard" element={<WorkSpace />} />
+                <Route path="/orbit" element={<OrbitDashboard />} />
                 <Route path="/project/:id" element={<ProjectDetail />} />
                 <Route path="/login" element={<Auth />} />
                 <Route path="/collabspace/login" element={<CollabSpaceAuth />} />

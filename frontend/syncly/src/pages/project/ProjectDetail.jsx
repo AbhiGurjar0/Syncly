@@ -52,7 +52,7 @@ const ProjectDetail = () => {
             Project not found
           </p>
           <Link
-            to="/"
+            to="/dashboard"
             className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
           >
             Back to Dashboard
@@ -70,7 +70,7 @@ const ProjectDetail = () => {
           <div className="px-6 pt-4 pb-0">
             <div className="flex items-center justify-between mb-3">
               <Link
-                to="/"
+                to="/dashboard"
                 className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" />
